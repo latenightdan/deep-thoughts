@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { LOGIN_USER } from '../utils/mutations';
+import Auth from '../utils/auth';
 
 const Login = (props) => {
   const [formState, setFormState] = useState({ email: '', password: '' });
+  const [login, { error }] = useMutation(LOGIN_USER);
 
   // update state based on form input changes
   const handleChange = (event) => {
@@ -18,11 +22,23 @@ const Login = (props) => {
     event.preventDefault();
 
     // clear form values
-    setFormState({
-      email: '',
-      password: '',
-    });
-  };
+
+      //try to really understand how this destructuring syntax works
+       //I kinda get that it's using the formstate variable passed in through
+       //useState. wait... maybe that's it? then what are the ... for? does that make it all the variables, instead of just one?
+       
+       //ok it's a spread operator. if you're confused in the future look that up
+
+       try {
+        const { data } = await login({
+          variables: { ...formState }
+        });
+    Auth.login(data.login.token);
+        console.log(data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
 
   return (
     <main className='flex-row justify-center mb-4'>
@@ -40,6 +56,7 @@ const Login = (props) => {
                 value={formState.email}
                 onChange={handleChange}
               />
+              {error && <div>YOU STINK!!!</div>}
               <input
                 className='form-input'
                 placeholder='******'

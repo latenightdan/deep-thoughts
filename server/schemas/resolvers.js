@@ -7,7 +7,7 @@ const resolvers = {
 
     me: async (parent, args, context) => {
       if(context.user) {
-        const userData = await User.findOne({_id: context.user.__id})
+        const userData = await User.findOne({_id: context.user._id})
         .select('-__v -password')
         .populate('thoughts')
         .populate('friends');
@@ -46,17 +46,17 @@ const resolvers = {
     },
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
-    
+
       if (!user) {
-        throw new AuthenticationError('Incorrect credentialsssss');
+        throw new AuthenticationError('Incorrect credentialssssss');
       }
-    
+
       const correctPw = await user.isCorrectPassword(password);
-    
+
       if (!correctPw) {
         throw new AuthenticationError('Incorrect credentialsssssss');
       }
-    
+
       const token = signToken(user);
       return { token, user };
     },
@@ -66,7 +66,7 @@ const resolvers = {
 
         await User.findByIdAndUpdate(
           { _id: context.user._id},
-          { $push: { thoughts: thought.__id} },
+          { $push: { thoughts: thought._id} },
           { new: true}
         );
         return thought;
